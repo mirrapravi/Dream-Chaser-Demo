@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCrafted - Your Personalized Career Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>CareerCrafted</h1>
+            </div>
+            <p class="tagline">The go-getter's guide to building a career that moves with you</p>
+        </header>
+
+        <!-- Career Assessment Section -->
+        <section class="assessment-section" id="assessmentSection">
+            <div class="assessment-intro">
+                <h2><i class="fas fa-compass"></i> Let's Discover Your Perfect Career Path</h2>
+                <p>Answer a few questions to get personalized career recommendations that align with your personality, skills, and dreams.</p>
+            </div>
+            
+            <form id="careerAssessmentForm" class="assessment-form">
+                <!-- Step 1: Personality -->
+                <div class="step active" id="step1">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3>Tell us about yourself</h3>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="personality">What kind of person are you? Describe yourself in a few words.</label>
+                        <textarea id="personality" name="personality" placeholder="e.g., Creative problem-solver, analytical thinker, people person, detail-oriented..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="workStyle">How do you prefer to work?</label>
+                        <select id="workStyle" name="workStyle">
+                            <option value="">Select your preference</option>
+                            <option value="team">I love collaborating with teams</option>
+                            <option value="independent">I work best independently</option>
+                            <option value="mixed">I enjoy both teamwork and solo work</option>
+                            <option value="leadership">I prefer leading and managing others</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" class="next-btn" onclick="nextStep(2)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Step 2: Skills & Superpowers -->
+                <div class="step" id="step2">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3>Your Career Superpowers</h3>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="superpowers">What are your career superpowers? What are you naturally good at?</label>
+                        <textarea id="superpowers" name="superpowers" placeholder="e.g., building models, analyzing data, creating designs, writing code, managing projects, public speaking..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="skills">What technical skills do you have or want to develop?</label>
+                        <input type="text" id="skills" name="skills" placeholder="e.g., Python, Excel, Photoshop, Project Management, Marketing...">
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="prev-btn" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="next-btn" onclick="nextStep(3)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Dream Career -->
+                <div class="step" id="step3">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h3>Your Dream Career</h3>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="dreamCareer">Tell me about your dream career. Where do you see yourself?</label>
+                        <textarea id="dreamCareer" name="dreamCareer" placeholder="e.g., Data Scientist at Google, Creative Director at a startup, Product Manager at Microsoft..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="industry">Which industries interest you most?</label>
+                        <select id="industry" name="industry">
+                            <option value="">Select an industry</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="education">Education</option>
+                            <option value="marketing">Marketing & Advertising</option>
+                            <option value="design">Design & Creative</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="nonprofit">Non-profit</option>
+                            <option value="government">Government</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="prev-btn" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="next-btn" onclick="nextStep(4)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Preferences -->
+                <div class="step" id="step4">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <h3>Your Preferences</h3>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="location">Where would you like to work?</label>
+                        <input type="text" id="location" name="location" placeholder="e.g., San Francisco, Remote, New York, Anywhere">
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="relocate">Would you be open to relocating globally?</label>
+                        <select id="relocate" name="relocate">
+                            <option value="">Select your preference</option>
+                            <option value="yes">Yes, I'm open to relocating anywhere</option>
+                            <option value="domestic">Only within my country</option>
+                            <option value="remote">I prefer remote work</option>
+                            <option value="no">No, I want to stay local</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label for="jobTypes">What types of positions interest you?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="jobTypes" value="full-time">
+                                <span>Full-time positions</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="jobTypes" value="part-time">
+                                <span>Part-time opportunities</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="jobTypes" value="internship">
+                                <span>Internships</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="jobTypes" value="contract">
+                                <span>Contract work</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="jobTypes" value="freelance">
+                                <span>Freelance projects</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="prev-btn" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="submit" class="submit-btn" id="submitAssessment">
+                            <i class="fas fa-magic"></i> Craft My Career Path
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- Loading Section -->
+        <section class="loading-section" id="loadingSection" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3>Searching across the internet...</h3>
+            <div class="search-progress">
+                <div class="progress-item">
+                    <span class="source-name">Job Boards</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="jobBoardsProgress"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <span class="source-name">Social Media</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="socialMediaProgress"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <span class="source-name">Company Sites</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="companySitesProgress"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Career Insights Section -->
+        <section class="insights-section" id="insightsSection" style="display: none;">
+            <div class="insights-header">
+                <h2><i class="fas fa-lightbulb"></i> Your Personalized Career Insights</h2>
+                <div id="personalityInsight" class="insight-card">
+                    <!-- Personality-based insights will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h2 id="resultsCount">Your Perfect Career Matches</h2>
+                <div class="results-actions">
+                    <button class="btn-secondary" id="exportBtn">
+                        <i class="fas fa-download"></i>
+                        Export Results
+                    </button>
+                    <button class="btn-secondary" id="refineBtn">
+                        <i class="fas fa-sliders-h"></i>
+                        Refine Search
+                    </button>
+                </div>
+            </div>
+            
+            <div class="recommendation-intro" id="recommendationIntro">
+                <!-- Personalized recommendation message will be populated here -->
+            </div>
+            
+            <div class="filters">
+                <select id="sortBy">
+                    <option value="match">Sort by Match Score</option>
+                    <option value="salary">Sort by Salary</option>
+                    <option value="date">Sort by Date</option>
+                    <option value="company">Sort by Company</option>
+                </select>
+                
+                <select id="filterSource">
+                    <option value="">All Sources</option>
+                    <option value="indeed">Indeed</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="glassdoor">Glassdoor</option>
+                    <option value="company">Company Sites</option>
+                </select>
+            </div>
+            
+            <div class="jobs-container" id="jobsContainer">
+                <!-- Job results will be populated here -->
+            </div>
+            
+            <div class="follow-up-questions" id="followUpQuestions" style="display: none;">
+                <h3><i class="fas fa-question-circle"></i> Want to refine your search?</h3>
+                <div class="follow-up-grid">
+                    <button class="follow-up-btn" onclick="askFollowUp('salary')">
+                        <i class="fas fa-dollar-sign"></i>
+                        Adjust Salary Expectations
+                    </button>
+                    <button class="follow-up-btn" onclick="askFollowUp('location')">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Expand Location Options
+                    </button>
+                    <button class="follow-up-btn" onclick="askFollowUp('experience')">
+                        <i class="fas fa-chart-line"></i>
+                        Consider Different Experience Levels
+                    </button>
+                    <button class="follow-up-btn" onclick="askFollowUp('industry')">
+                        <i class="fas fa-industry"></i>
+                        Explore Related Industries
+                    </button>
+                </div>
+            </div>
+            
+            <div class="load-more">
+                <button class="btn-secondary" id="loadMoreBtn">Load More Matches</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

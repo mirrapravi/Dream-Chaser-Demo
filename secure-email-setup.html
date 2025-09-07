@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Email Setup - Dream Chaser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .security-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .auth-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .auth-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .auth-card.recommended {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+        }
+
+        .auth-card.recommended::before {
+            content: "RECOMMENDED";
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .auth-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-level {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .security-high { background: #d1fae5; color: #065f46; }
+        .security-medium { background: #fef3c7; color: #92400e; }
+        .security-low { background: #fee2e2; color: #dc2626; }
+
+        .auth-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .benefits-list li {
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .benefits-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .setup-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-oauth {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-oauth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-app-password {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-app-password:hover {
+            background: #d97706;
+        }
+
+        .instructions-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            padding: 15px 0;
+            padding-left: 40px;
+            position: relative;
+            border-left: 2px solid #e1e5e9;
+            margin-left: 15px;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -15px;
+            top: 15px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .step-list li:last-child {
+            border-left: none;
+        }
+
+        .security-note {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .security-note h4 {
+            color: #0369a1;
+            margin-bottom: 10px;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .provider-btn {
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .provider-btn:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .provider-btn.selected {
+            border-color: #667eea;
+            background: #eff6ff;
+        }
+
+        .oauth-flow {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .oauth-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .oauth-step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .auth-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i> Secure Email Authentication
+            </div>
+            <h1><i class="fas fa-star"></i> Dream Chaser Email Setup</h1>
+            <p>Connect your email securely without storing passwords</p>
+        </header>
+
+        <div class="auth-methods">
+            <!-- OAuth2 Method -->
+            <div class="auth-card recommended">
+                <div class="auth-title">
+                    <i class="fas fa-key" style="color: #10b981;"></i>
+                    OAuth2 Authentication
+                </div>
+                <div class="security-level security-high">Highest Security</div>
+                <div class="auth-description">
+                    The most secure method. No passwords stored. Uses official APIs from email providers.
+                </div>
+                <ul class="benefits-list">
+                    <li>No password storage required</li>
+                    <li>Granular permissions control</li>
+                    <li>Easy to revoke access</li>
+                    <li>Automatic token refresh</li>
+                    <li>Industry standard security</li>
+                </ul>
+                <button class="setup-btn btn-oauth" onclick="showOAuthSetup()">
+                    <i class="fas fa-shield-alt"></i>
+                    Setup OAuth2
+                </button>
+            </div>
+
+            <!-- App Password Method -->
+            <div class="auth-card">
+                <div class="auth-title">
+                    <i class="fas fa-lock" style="color: #f59e0b;"></i>
+                    App-Specific Password
+                </div>
+                <div class="security-level security-medium">High Security</div>
+                <div class="auth-description">
+                    Generate a special password just for Dream Chaser. Safer than your main password.
+                </div>
+                <ul class="benefits-list">
+                    <li>Safer than main password</li>
+                    <li>Can be revoked independently</li>
+                    <li>Works with 2FA enabled</li>
+                    <li>No code integration needed</li>
+                </ul>
+                <button class="setup-btn btn-app-password" onclick="showAppPasswordSetup()">
+                    <i class="fas fa-key"></i>
+                    Generate App Password
+                </button>
+            </div>
+
+            <!-- Regular Password (Not Recommended) -->
+            <div class="auth-card" style="opacity: 0.7;">
+                <div class="auth-title">
+                    <i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>
+                    Regular Password
+                </div>
+                <div class="security-level security-low">Not Recommended</div>
+                <div class="auth-description">
+                    Using your regular email password is not secure and not recommended.
+                </div>
+                <div style="color: #dc2626; font-weight: 600; margin-bottom: 15px;">
+                    ⚠️ Security Risk: Password storage required
+                </div>
+                <button class="setup-btn" style="background: #e5e7eb; color: #6b7280;" disabled>
+                    <i class="fas fa-ban"></i>
+                    Not Recommended
+                </button>
+            </div>
+        </div>
+
+        <div class="security-note">
+            <h4><i class="fas fa-lightbulb"></i> Security Recommendation</h4>
+            <p>We strongly recommend using OAuth2 authentication for maximum security. Your email credentials are never stored on our servers, and you maintain full control over access permissions.</p>
+        </div>
+    </div>
+
+    <!-- OAuth2 Setup Modal -->
+    <div id="oauthModal" class="instructions-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shield-alt"></i> OAuth2 Setup</h3>
+                <button class="close-btn" onclick="closeModal('oauthModal')">&times;</button>
+            </div>
+
+            <div class="provider-grid">
+                <div class="provider-btn" onclick="selectProvider('gmail')">
+                    <i class="fab fa-google" style="font-size: 2rem; color: #ea4335; margin-bottom: 10px;"></i>
+                    <div>Gmail</div>
+                </div>
+                <div class="provider-btn" onclick="selectProvider('outlook')">
+                    <i class="fab fa-microsoft" style="font-size: 2rem; color: #0078d4; margin-bottom: 10px;"></i>
+                    <div>Outlook</div>
+                </div>
+                <div class="provider-btn" onclick="selectProvider('yahoo')">
+                    <i class="fab fa-yahoo" style="font-size: 2rem; color: #720e9e; margin-bottom: 10px;"></i>
+                    <div>Yahoo</div>
+                </div>
+            </div>
+
+            <div id="oauthFlow" class="oauth-flow" style="display: none;">
+                <h4>OAuth2 Authentication Flow</h4>
+                <div class="oauth-step">
+                    <div class="oauth-step-number">1</div>
+                    <div>Click "Authorize" to open your email provider's login page</div>
+                </div>
+                <div class="oauth-step">
+                    <div class="oauth-step-number">2</div>
+                    <div>Sign in to your email account</div>
+                </div>
+                <div class="oauth-step">
+                    <div class="oauth-step-number">3</div>
+                    <div>Grant Dream Chaser permission to read your emails</div>
+                </div>
+                <div class="oauth-step">
+                    <div class="oauth-step-number">4</div>
+                    <div>You'll be redirected back to Dream Chaser automatically</div>
+                </div>
+
+                <button id="authorizeBtn" class="setup-btn btn-oauth" style="margin-top: 20px;" onclick="startOAuthFlow()">
+                    <i class="fas fa-external-link-alt"></i>
+                    Authorize Access
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Password Setup Modal -->
+    <div id="appPasswordModal" class="instructions-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> App Password Setup</h3>
+                <button class="close-btn" onclick="closeModal('appPasswordModal')">&times;</button>
+            </div>
+
+            <div class="provider-grid">
+                <div class="provider-btn" onclick="showAppPasswordInstructions('gmail')">
+                    <i class="fab fa-google" style="font-size: 2rem; color: #ea4335; margin-bottom: 10px;"></i>
+                    <div>Gmail</div>
+                </div>
+                <div class="provider-btn" onclick="showAppPasswordInstructions('outlook')">
+                    <i class="fab fa-microsoft" style="font-size: 2rem; color: #0078d4; margin-bottom: 10px;"></i>
+                    <div>Outlook</div>
+                </div>
+                <div class="provider-btn" onclick="showAppPasswordInstructions('yahoo')">
+                    <i class="fab fa-yahoo" style="font-size: 2rem; color: #720e9e; margin-bottom: 10px;"></i>
+                    <div>Yahoo</div>
+                </div>
+            </div>
+
+            <div id="appPasswordInstructions" style="display: none;">
+                <ol class="step-list" id="instructionSteps">
+                    <!-- Instructions will be populated by JavaScript -->
+                </ol>
+
+                <div class="security-note">
+                    <h4><i class="fas fa-info-circle"></i> Security Note</h4>
+                    <p id="securityNote">App passwords provide secure access without exposing your main password.</p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Enter your app password:</label>
+                    <input type="password" id="appPasswordInput" placeholder="16-character app password" 
+                           style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 8px; margin-bottom: 15px;">
+                    <button class="setup-btn btn-app-password" onclick="saveAppPassword()">
+                        <i class="fas fa-save"></i>
+                        Save App Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedProvider = null;
+
+        const appPasswordInstructions = {
+            gmail: {
+                steps: [
+                    "Go to your Google Account settings (myaccount.google.com)",
+                    "Navigate to Security → 2-Step Verification",
+                    "Enable 2-Step Verification if not already enabled",
+                    "Go to App passwords",
+                    "Select 'Mail' and 'Other (Custom name)'",
+                    "Enter 'Dream Chaser' as the app name",
+                    "Copy the generated 16-character password",
+                    "Paste the password in the field below"
+                ],
+                securityNote: "App passwords are safer than your main password and can be revoked anytime from your Google Account settings."
+            },
+            outlook: {
+                steps: [
+                    "Go to account.microsoft.com",
+                    "Navigate to Security → Advanced security options",
+                    "Enable two-step verification if not already enabled",
+                    "Go to App passwords",
+                    "Click 'Create a new app password'",
+                    "Enter 'Dream Chaser' as the app name",
+                    "Copy the generated password",
+                    "Paste the password in the field below"
+                ],
+                securityNote: "App passwords provide secure access without exposing your main password and can be managed from your Microsoft account."
+            },
+            yahoo: {
+                steps: [
+                    "Go to Yahoo Account Security",
+                    "Enable two-step verification",
+                    "Generate an app password",
+                    "Select 'Other app' and enter 'Dream Chaser'",
+                    "Copy the generated password",
+                    "Paste the password in the field below"
+                ],
+                securityNote: "App passwords are required for third-party apps with Yahoo Mail when 2FA is enabled."
+            }
+        };
+
+        function showOAuthSetup() {
+            document.getElementById('oauthModal').style.display = 'block';
+        }
+
+        function showAppPasswordSetup() {
+            document.getElementById('appPasswordModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            selectedProvider = null;
+            document.getElementById('oauthFlow').style.display = 'none';
+            document.getElementById('appPasswordInstructions').style.display = 'none';
+        }
+
+        function selectProvider(provider) {
+            selectedProvider = provider;
+            
+            // Update provider button selection
+            document.querySelectorAll('.provider-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.closest('.provider-btn').classList.add('selected');
+            
+            // Show OAuth flow
+            document.getElementById('oauthFlow').style.display = 'block';
+            
+            // Update authorize button
+            const authorizeBtn = document.getElementById('authorizeBtn');
+            const providerNames = { gmail: 'Google', outlook: 'Microsoft', yahoo: 'Yahoo' };
+            authorizeBtn.innerHTML = `<i class="fas fa-external-link-alt"></i> Authorize ${providerNames[provider]}`;
+        }
+
+        function showAppPasswordInstructions(provider) {
+            selectedProvider = provider;
+            
+            // Update provider button selection
+            document.querySelectorAll('.provider-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.closest('.provider-btn').classList.add('selected');
+            
+            // Show instructions
+            const instructions = appPasswordInstructions[provider];
+            const stepsList = document.getElementById('instructionSteps');
+            const securityNote = document.getElementById('securityNote');
+            
+            stepsList.innerHTML = instructions.steps.map(step => `<li>${step}</li>`).join('');
+            securityNote.textContent = instructions.securityNote;
+            
+            document.getElementById('appPasswordInstructions').style.display = 'block';
+        }
+
+        function startOAuthFlow() {
+            if (!selectedProvider) {
+                alert('Please select an email provider first');
+                return;
+            }
+            
+            // In a real implementation, this would redirect to the OAuth provider
+            alert(`Starting OAuth flow for ${selectedProvider}. This would redirect to ${selectedProvider}'s authorization page.`);
+            
+            // Demo: simulate successful OAuth
+            setTimeout(() => {
+                alert('OAuth authentication successful! Email monitoring is now active.');
+                closeModal('oauthModal');
+            }, 2000);
+        }
+
+        function saveAppPassword() {
+            const password = document.getElementById('appPasswordInput').value;
+            
+            if (!password) {
+                alert('Please enter your app password');
+                return;
+            }
+            
+            if (!selectedProvider) {
+                alert('Please select an email provider first');
+                return;
+            }
+            
+            // In a real implementation, this would save the encrypted app password
+            alert(`App password saved successfully for ${selectedProvider}! Email monitoring is now active.`);
+            closeModal('appPasswordModal');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.instructions-modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

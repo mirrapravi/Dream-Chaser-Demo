@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Applications - Dream Chaser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab:not(.active):hover {
+            background: #f1f5f9;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-paused {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .application-item {
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .application-item:hover {
+            border-color: #667eea;
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .application-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .application-company {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .application-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .ai-insight {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ai-insight h4 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .application-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="enhanced-dashboard.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+    </a>
+
+    <div class="header">
+        <div class="container">
+            <h1><i class="fas fa-robot"></i> Intelligent Applications</h1>
+            <p>Automate your job applications with AI-powered precision</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('preferences')">
+                <i class="fas fa-cog"></i> Preferences
+            </div>
+            <div class="tab" onclick="switchTab('applications')">
+                <i class="fas fa-paper-plane"></i> Auto Applications
+            </div>
+            <div class="tab" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </div>
+        </div>
+
+        <div id="preferences" class="tab-content active">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-user-cog"></i>
+                    Application Preferences
+                </div>
+
+                <div class="ai-insight">
+                    <h4><i class="fas fa-brain"></i> AI Recommendation</h4>
+                    <p>Based on your profile, we recommend targeting mid-level positions with visa sponsorship in tech companies. Your skills match 87% of current market demands.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="targetRole">Target Role</label>
+                        <input type="text" id="targetRole" placeholder="e.g. Software Engineer" value="Software Engineer">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salaryMin">Minimum Salary</label>
+                        <input type="number" id="salaryMin" placeholder="80000" value="85000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salaryMax">Maximum Salary</label>
+                        <input type="number" id="salaryMax" placeholder="120000" value="130000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="locations">Preferred Locations</label>
+                        <input type="text" id="locations" placeholder="San Francisco, New York, Remote" value="San Francisco, Remote">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dailyLimit">Daily Application Limit</label>
+                        <select id="dailyLimit">
+                            <option value="5" selected>5 applications/day</option>
+                            <option value="10">10 applications/day</option>
+                            <option value="15">15 applications/day</option>
+                            <option value="20">20 applications/day</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experienceLevel">Experience Level</label>
+                        <select id="experienceLevel">
+                            <option value="entry">Entry Level</option>
+                            <option value="mid" selected>Mid Level</option>
+                            <option value="senior">Senior Level</option>
+                            <option value="lead">Lead/Principal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="visaSponsorship" checked>
+                    <label for="visaSponsorship">Require Visa Sponsorship</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="relocationSupport" checked>
+                    <label for="relocationSupport">Prefer Relocation Support</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remoteWork">
+                    <label for="remoteWork">Include Remote Positions</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="personalStory">Personal Story (for cover letters)</label>
+                    <textarea id="personalStory" rows="4" placeholder="Share your career journey, motivations, and what drives you professionally...">I'm passionate about creating innovative software solutions that make a real impact. Having worked across different technologies, I bring a unique perspective to problem-solving and team collaboration.</textarea>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-success" onclick="savePreferences()">
+                        <i class="fas fa-save"></i>
+                        Save Preferences
+                    </button>
+                    <button class="btn btn-primary" onclick="startAutoApply()">
+                        <i class="fas fa-play"></i>
+                        Start Auto-Apply
+                    </button>
+                    <button class="btn btn-secondary" onclick="pauseAutoApply()">
+                        <i class="fas fa-pause"></i>
+                        Pause Auto-Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="applications" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-paper-plane"></i>
+                    Auto-Application Status
+                    <span class="status-badge status-active">Active</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">47</div>
+                        <div class="stat-label">Applications Sent Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">312</div>
+                        <div class="stat-label">Total Auto-Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Responses Received</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">7.4%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+                </div>
+
+                <div class="application-item">
+                    <div class="application-header">
+                        <div>
+                            <div class="application-title">Senior Software Engineer</div>
+                            <div class="application-company">TechCorp Inc.</div>
+                        </div>
+                        <span class="status-badge status-active">Applied</span>
+                    </div>
+                    <div class="application-meta">
+                        <span><i class="fas fa-clock"></i> 2 hours ago</span>
+                        <span><i class="fas fa-map-marker-alt"></i> San Francisco, CA</span>
+                        <span><i class="fas fa-dollar-sign"></i> $120k - $160k</span>
+                        <span><i class="fas fa-passport"></i> Visa Sponsorship</span>
+                    </div>
+                    <p><strong>ATS Score:</strong> 94% | <strong>Cover Letter:</strong> Personalized with your story | <strong>Resume:</strong> Optimized for this role</p>
+                </div>
+
+                <div class="application-item">
+                    <div class="application-header">
+                        <div>
+                            <div class="application-title">Full Stack Developer</div>
+                            <div class="application-company">StartupXYZ</div>
+                        </div>
+                        <span class="status-badge status-active">Applied</span>
+                    </div>
+                    <div class="application-meta">
+                        <span><i class="fas fa-clock"></i> 4 hours ago</span>
+                        <span><i class="fas fa-globe"></i> Remote</span>
+                        <span><i class="fas fa-dollar-sign"></i> $90k - $120k</span>
+                        <span><i class="fas fa-home"></i> Remote Work</span>
+                    </div>
+                    <p><strong>ATS Score:</strong> 89% | <strong>Cover Letter:</strong> Personalized with your story | <strong>Resume:</strong> Optimized for this role</p>
+                </div>
+
+                <div class="application-item">
+                    <div class="application-header">
+                        <div>
+                            <div class="application-title">Backend Engineer</div>
+                            <div class="application-company">DataCorp Inc.</div>
+                        </div>
+                        <span class="status-badge status-active">Applied</span>
+                    </div>
+                    <div class="application-meta">
+                        <span><i class="fas fa-clock"></i> 6 hours ago</span>
+                        <span><i class="fas fa-map-marker-alt"></i> New York, NY</span>
+                        <span><i class="fas fa-dollar-sign"></i> $110k - $140k</span>
+                        <span><i class="fas fa-passport"></i> Visa Sponsorship</span>
+                    </div>
+                    <p><strong>ATS Score:</strong> 91% | <strong>Cover Letter:</strong> Personalized with your story | <strong>Resume:</strong> Optimized for this role</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Application Analytics
+                </div>
+
+                <div class="ai-insight">
+                    <h4><i class="fas fa-lightbulb"></i> AI Insights</h4>
+                    <p>Your applications to companies with 100-500 employees have a 23% higher response rate. Consider focusing on mid-size companies for better results.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">312</div>
+                        <div class="stat-label">Total Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Responses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">7</div>
+                        <div class="stat-label">Interviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Offers</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                    <div class="card">
+                        <h4>Top Performing Keywords</h4>
+                        <ul style="margin-top: 15px; line-height: 2;">
+                            <li>JavaScript (92% ATS score)</li>
+                            <li>React (89% ATS score)</li>
+                            <li>Node.js (87% ATS score)</li>
+                            <li>AWS (85% ATS score)</li>
+                            <li>Python (83% ATS score)</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h4>Response Rate by Company Size</h4>
+                        <ul style="margin-top: 15px; line-height: 2;">
+                            <li>Startup (1-50): 12.3%</li>
+                            <li>Small (51-200): 15.7%</li>
+                            <li>Medium (201-1000): 18.9%</li>
+                            <li>Large (1000+): 9.2%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.closest('.tab').classList.add('active');
+        }
+
+        function savePreferences() {
+            alert('Preferences saved successfully! 🎯\n\nYour intelligent application settings have been updated and will be used for future auto-applications.');
+        }
+
+        function startAutoApply() {
+            alert('Auto-Apply Started! 🚀\n\nDream Chaser will now automatically apply to jobs matching your preferences. You\'ll receive notifications for each application sent.');
+        }
+
+        function pauseAutoApply() {
+            alert('Auto-Apply Paused ⏸️\n\nAutomatic job applications have been paused. You can resume anytime from this dashboard.');
+        }
+    </script>
+</body>
+</html>

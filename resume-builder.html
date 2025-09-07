@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resume Builder - Dream Chaser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .builder-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 200px);
+        }
+
+        .editor-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .preview-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .resume-preview {
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 40px;
+            background: white;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+
+        .resume-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .resume-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .resume-contact {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .resume-section {
+            margin-bottom: 25px;
+        }
+
+        .resume-section h3 {
+            font-size: 1.2rem;
+            color: #667eea;
+            border-bottom: 1px solid #e1e5e9;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .experience-item,
+        .education-item {
+            margin-bottom: 15px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-company {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .item-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .ats-score {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .optimization-tips {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .optimization-tips h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .optimization-tips ul {
+            color: #92400e;
+            margin-left: 20px;
+        }
+
+        .job-match {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .job-match h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .builder-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="enhanced-dashboard.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+    </a>
+
+    <div class="header">
+        <div class="container">
+            <h1><i class="fas fa-file-alt"></i> Smart Resume Builder</h1>
+            <p>Create ATS-optimized resumes tailored for specific jobs</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="builder-container">
+            <div class="editor-panel">
+                <div class="section-title">
+                    <i class="fas fa-edit"></i>
+                    Resume Builder
+                </div>
+
+                <div class="job-match">
+                    <h4><i class="fas fa-bullseye"></i> Job-Specific Optimization</h4>
+                    <p>Enter a job title or paste a job description to optimize your resume for ATS systems and specific requirements.</p>
+                    <input type="text" id="jobTitle" placeholder="e.g. Senior Software Engineer" style="margin-top: 10px;">
+                    <button class="btn btn-primary" onclick="optimizeForJob()" style="margin-top: 10px;">
+                        <i class="fas fa-robot"></i>
+                        Optimize Resume
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="John Doe" onchange="updatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="john@example.com" onchange="updatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 123-4567" onchange="updatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="San Francisco, CA" onchange="updatePreview()">
+                </div>
+
+                <div class="form-group">
+                    <label for="summary">Professional Summary</label>
+                    <textarea id="summary" placeholder="Brief overview of your professional background and key achievements..." onchange="updatePreview()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Work Experience</label>
+                    <textarea id="experience" placeholder="Job Title | Company | Dates&#10;• Achievement or responsibility&#10;• Another achievement with metrics" onchange="updatePreview()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="education">Education</label>
+                    <textarea id="education" placeholder="Degree | University | Year" onchange="updatePreview()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">Skills (comma-separated)</label>
+                    <textarea id="skills" placeholder="JavaScript, Python, React, Node.js, SQL, AWS..." onchange="updatePreview()"></textarea>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-success" onclick="downloadResume()">
+                        <i class="fas fa-download"></i>
+                        Download PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="saveResume()">
+                        <i class="fas fa-save"></i>
+                        Save Resume
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadTemplate()">
+                        <i class="fas fa-file-import"></i>
+                        Load Template
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="section-title">
+                    <i class="fas fa-eye"></i>
+                    Live Preview
+                </div>
+
+                <div class="ats-score">
+                    <div class="score-number" id="atsScore">85</div>
+                    <div class="score-label">ATS Compatibility Score</div>
+                </div>
+
+                <div class="optimization-tips">
+                    <h4><i class="fas fa-lightbulb"></i> Optimization Tips</h4>
+                    <ul id="optimizationTips">
+                        <li>Add more relevant keywords for the target role</li>
+                        <li>Include quantifiable achievements with metrics</li>
+                        <li>Ensure consistent formatting throughout</li>
+                    </ul>
+                </div>
+
+                <div class="resume-preview" id="resumePreview">
+                    <div class="resume-header">
+                        <div class="resume-name" id="previewName">Your Name</div>
+                        <div class="resume-contact" id="previewContact">
+                            your.email@example.com | +1 (555) 123-4567 | Your Location
+                        </div>
+                    </div>
+
+                    <div class="resume-section">
+                        <h3>Professional Summary</h3>
+                        <p id="previewSummary">Your professional summary will appear here...</p>
+                    </div>
+
+                    <div class="resume-section">
+                        <h3>Work Experience</h3>
+                        <div id="previewExperience">
+                            <div class="experience-item">
+                                <div class="item-header">
+                                    <div>
+                                        <div class="item-title">Your Job Title</div>
+                                        <div class="item-company">Company Name</div>
+                                    </div>
+                                    <div class="item-date">Dates</div>
+                                </div>
+                                <p>Your work experience details will appear here...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resume-section">
+                        <h3>Education</h3>
+                        <div id="previewEducation">
+                            <div class="education-item">
+                                <div class="item-header">
+                                    <div>
+                                        <div class="item-title">Your Degree</div>
+                                        <div class="item-company">University Name</div>
+                                    </div>
+                                    <div class="item-date">Year</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resume-section">
+                        <h3>Skills</h3>
+                        <div class="skills-list" id="previewSkills">
+                            <span class="skill-tag">Your skills will appear here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePreview() {
+            const fullName = document.getElementById('fullName').value || 'Your Name';
+            const email = document.getElementById('email').value || 'your.email@example.com';
+            const phone = document.getElementById('phone').value || '+1 (555) 123-4567';
+            const location = document.getElementById('location').value || 'Your Location';
+            const summary = document.getElementById('summary').value || 'Your professional summary will appear here...';
+            const experience = document.getElementById('experience').value || 'Your work experience details will appear here...';
+            const education = document.getElementById('education').value || 'Your education details will appear here...';
+            const skills = document.getElementById('skills').value || 'Your skills will appear here';
+
+            document.getElementById('previewName').textContent = fullName;
+            document.getElementById('previewContact').textContent = `${email} | ${phone} | ${location}`;
+            document.getElementById('previewSummary').textContent = summary;
+            document.getElementById('previewExperience').innerHTML = formatExperience(experience);
+            document.getElementById('previewEducation').innerHTML = formatEducation(education);
+            document.getElementById('previewSkills').innerHTML = formatSkills(skills);
+
+            calculateATSScore();
+        }
+
+        function formatExperience(experience) {
+            if (!experience || experience === 'Your work experience details will appear here...') {
+                return '<div class="experience-item"><p>Your work experience details will appear here...</p></div>';
+            }
+
+            const lines = experience.split('\n').filter(line => line.trim());
+            let formatted = '';
+            let currentJob = '';
+
+            lines.forEach(line => {
+                if (line.includes('|')) {
+                    if (currentJob) formatted += '</div>';
+                    const parts = line.split('|').map(p => p.trim());
+                    formatted += `
+                        <div class="experience-item">
+                            <div class="item-header">
+                                <div>
+                                    <div class="item-title">${parts[0] || 'Job Title'}</div>
+                                    <div class="item-company">${parts[1] || 'Company'}</div>
+                                </div>
+                                <div class="item-date">${parts[2] || 'Dates'}</div>
+                            </div>
+                    `;
+                    currentJob = 'open';
+                } else if (line.startsWith('•')) {
+                    formatted += `<p>${line}</p>`;
+                }
+            });
+
+            if (currentJob) formatted += '</div>';
+            return formatted || '<div class="experience-item"><p>Your work experience details will appear here...</p></div>';
+        }
+
+        function formatEducation(education) {
+            if (!education || education === 'Your education details will appear here...') {
+                return '<div class="education-item"><p>Your education details will appear here...</p></div>';
+            }
+
+            const lines = education.split('\n').filter(line => line.trim());
+            let formatted = '';
+
+            lines.forEach(line => {
+                if (line.includes('|')) {
+                    const parts = line.split('|').map(p => p.trim());
+                    formatted += `
+                        <div class="education-item">
+                            <div class="item-header">
+                                <div>
+                                    <div class="item-title">${parts[0] || 'Degree'}</div>
+                                    <div class="item-company">${parts[1] || 'University'}</div>
+                                </div>
+                                <div class="item-date">${parts[2] || 'Year'}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            return formatted || '<div class="education-item"><p>Your education details will appear here...</p></div>';
+        }
+
+        function formatSkills(skills) {
+            if (!skills || skills === 'Your skills will appear here') {
+                return '<span class="skill-tag">Your skills will appear here</span>';
+            }
+
+            const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+            return skillsArray.map(skill => `<span class="skill-tag">${skill}</span>`).join('');
+        }
+
+        function calculateATSScore() {
+            const summary = document.getElementById('summary').value;
+            const experience = document.getElementById('experience').value;
+            const skills = document.getElementById('skills').value;
+            
+            let score = 60; // Base score
+            
+            if (summary && summary.length > 50) score += 10;
+            if (experience && experience.includes('•')) score += 15;
+            if (skills && skills.split(',').length >= 5) score += 10;
+            if (experience && /\d+%|\d+\$|\d+k/i.test(experience)) score += 5; // Metrics
+            
+            document.getElementById('atsScore').textContent = Math.min(score, 100);
+        }
+
+        function optimizeForJob() {
+            const jobTitle = document.getElementById('jobTitle').value;
+            if (!jobTitle) {
+                alert('Please enter a job title to optimize for.');
+                return;
+            }
+
+            // Simulate AI optimization
+            alert(`Optimizing resume for "${jobTitle}"...\n\nAI Analysis:\n• Added relevant keywords for ${jobTitle}\n• Optimized summary for ATS systems\n• Highlighted matching skills\n• Improved formatting for better parsing`);
+            
+            // Update optimization tips
+            document.getElementById('optimizationTips').innerHTML = `
+                <li>Resume optimized for "${jobTitle}" role</li>
+                <li>Added ${Math.floor(Math.random() * 10) + 5} relevant keywords</li>
+                <li>ATS compatibility improved by ${Math.floor(Math.random() * 20) + 10}%</li>
+                <li>Skills section prioritized for this role</li>
+            `;
+
+            // Increase ATS score
+            const currentScore = parseInt(document.getElementById('atsScore').textContent);
+            document.getElementById('atsScore').textContent = Math.min(currentScore + 15, 100);
+        }
+
+        function downloadResume() {
+            alert('Resume downloaded as PDF! 📄\n\nIn the full version, this would generate a professionally formatted PDF resume.');
+        }
+
+        function saveResume() {
+            alert('Resume saved successfully! 💾\n\nYour resume has been saved to your account and can be accessed anytime.');
+        }
+
+        function loadTemplate() {
+            alert('Loading resume template... 📋\n\nChoose from our ATS-optimized templates designed for different industries.');
+        }
+
+        // Initialize preview
+        updatePreview();
+    </script>
+</body>
+</html>

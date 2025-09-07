@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Dream Chaser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+        }
+
+        .welcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-tile {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-tile:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.applications { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-icon.interviews { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .stat-icon.offers { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .stat-icon.responses { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recent-activities {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.applied { background: #3b82f6; }
+        .activity-icon.interview { background: #f59e0b; }
+        .activity-icon.response { background: #10b981; }
+        .activity-icon.rejected { background: #ef4444; }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .job-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .job-tile {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .job-tile:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .job-company {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .job-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-applied { background: #dbeafe; color: #1e40af; }
+        .status-interview { background: #fef3c7; color: #92400e; }
+        .status-offer { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #dc2626; }
+
+        .job-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .action-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 250px;
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .job-tiles {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-star"></i> Dream Chaser</h1>
+                <p>Where Dream Careers are Manifested</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="job-search.html" class="nav-link">
+                        <i class="fas fa-search"></i>
+                        Find a Job
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="resume-builder.html" class="nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        Smart Resume Builder
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="intelligent-applications.html" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Intelligent Applications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="applications.html" class="nav-link">
+                        <i class="fas fa-briefcase"></i>
+                        My Applications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="secure-email-setup.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <section class="welcome-section">
+                <div class="welcome-header">
+                    <div class="welcome-text">
+                        <h2>Welcome back, <span id="userName">John</span>! 👋</h2>
+                        <p>Ready to chase your dream career today? Here's your personalized dashboard.</p>
+                    </div>
+                    <div class="welcome-actions">
+                        <button class="btn btn-primary" onclick="quickJobSearch()">
+                            <i class="fas fa-search"></i>
+                            Quick Job Search
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="quick-stats">
+                <div class="stat-tile" onclick="viewApplications()">
+                    <div class="stat-icon applications">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div class="stat-number" id="totalApplications">24</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                
+                <div class="stat-tile" onclick="viewInterviews()">
+                    <div class="stat-icon interviews">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-number" id="interviewsScheduled">3</div>
+                    <div class="stat-label">Interviews Scheduled</div>
+                </div>
+                
+                <div class="stat-tile" onclick="viewOffers()">
+                    <div class="stat-icon offers">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-number" id="offersReceived">1</div>
+                    <div class="stat-label">Offers Received</div>
+                </div>
+                
+                <div class="stat-tile" onclick="viewResponses()">
+                    <div class="stat-icon responses">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    <div class="stat-number" id="responseRate">68%</div>
+                    <div class="stat-label">Response Rate</div>
+                </div>
+            </section>
+
+            <section class="charts-row">
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-line"></i>
+                        Application Progress Over Time
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="recent-activities">
+                    <div class="chart-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Activities
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon interview">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Interview scheduled with TechCorp</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon applied">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Applied to Senior Developer at StartupXYZ</div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon response">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Response from DataCorp Inc.</div>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon applied">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Auto-applied to 3 matching positions</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="analytics-grid">
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Application Status Breakdown
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Response Rate by Company Size
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="companyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-area"></i>
+                        Salary Range Analysis
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="salaryChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-globe"></i>
+                        Application Geography
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="geoChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="job-tiles">
+                <div class="job-tile" onclick="viewJobDetails(1)">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">Senior Data Analyst</div>
+                            <div class="job-company">TechCorp Inc.</div>
+                        </div>
+                        <div class="job-status status-interview">Interview</div>
+                    </div>
+                    <div class="job-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> San Francisco, CA</span>
+                        <span><i class="fas fa-dollar-sign"></i> $95,000</span>
+                        <span><i class="fas fa-calendar"></i> Applied 3 days ago</span>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-calendar"></i>
+                            Schedule Interview
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <div class="job-tile" onclick="viewJobDetails(2)">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">Full Stack Developer</div>
+                            <div class="job-company">StartupXYZ</div>
+                        </div>
+                        <div class="job-status status-applied">Applied</div>
+                    </div>
+                    <div class="job-meta">
+                        <span><i class="fas fa-globe"></i> Remote</span>
+                        <span><i class="fas fa-dollar-sign"></i> $85,000</span>
+                        <span><i class="fas fa-calendar"></i> Applied 5 hours ago</span>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Follow Up
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-edit"></i>
+                            Update Application
+                        </button>
+                    </div>
+                </div>
+
+                <div class="job-tile" onclick="viewJobDetails(3)">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">Product Manager</div>
+                            <div class="job-company">DataCorp Inc.</div>
+                        </div>
+                        <div class="job-status status-offer">Offer</div>
+                    </div>
+                    <div class="job-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> New York, NY</span>
+                        <span><i class="fas fa-dollar-sign"></i> $110,000</span>
+                        <span><i class="fas fa-calendar"></i> Offer received 1 day ago</span>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-handshake"></i>
+                            Accept Offer
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-comments"></i>
+                            Negotiate
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="quick-actions">
+                <div class="action-card" onclick="navigateToTab('job-search')">
+                    <div class="action-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="action-title">Find New Jobs</div>
+                    <div class="action-description">Search for opportunities worldwide with intelligent visa detection</div>
+                </div>
+
+                <div class="action-card" onclick="navigateToTab('resume-builder')">
+                    <div class="action-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="action-title">Build Smart Resume</div>
+                    <div class="action-description">Create job-specific resumes optimized for ATS systems</div>
+                </div>
+
+                <div class="action-card" onclick="navigateToTab('intelligent-apps')">
+                    <div class="action-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="action-title">Auto-Apply Settings</div>
+                    <div class="action-description">Configure intelligent job applications with preferences</div>
+                </div>
+
+                <div class="action-card" onclick="openEmailSetup()">
+                    <div class="action-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="action-title">Email Tracking</div>
+                    <div class="action-description">Set up secure email monitoring for application updates</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadUserData();
+        });
+
+        // Initialize all charts
+        function initializeChart() {
+            initializeProgressChart();
+            initializeStatusChart();
+            initializeCompanyChart();
+            initializeSalaryChart();
+            initializeGeoChart();
+        }
+
+        // Progress chart
+        function initializeProgressChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Applications Sent',
+                        data: [2, 5, 8, 12, 18, 24],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Interviews',
+                        data: [0, 1, 2, 3, 3, 3],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Offers',
+                        data: [0, 0, 0, 1, 1, 1],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#667eea',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Status breakdown pie chart
+        function initializeStatusChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Applied', 'Interview', 'Offer', 'Rejected'],
+                    datasets: [{
+                        data: [20, 3, 1, 8],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#10b981',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Company size response rate chart
+        function initializeCompanyChart() {
+            const ctx = document.getElementById('companyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Startup', 'Small', 'Medium', 'Large', 'Enterprise'],
+                    datasets: [{
+                        label: 'Response Rate %',
+                        data: [85, 72, 65, 58, 45],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(139, 92, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            '#667eea',
+                            '#f59e0b',
+                            '#10b981',
+                            '#ef4444',
+                            '#8b5cf6'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Salary range analysis
+        function initializeSalaryChart() {
+            const ctx = document.getElementById('salaryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['$50k', '$60k', '$70k', '$80k', '$90k', '$100k', '$110k+'],
+                    datasets: [{
+                        label: 'Applications',
+                        data: [1, 3, 5, 8, 4, 2, 1],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Geographic distribution
+        function initializeGeoChart() {
+            const ctx = document.getElementById('geoChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['San Francisco', 'New York', 'Remote', 'Seattle', 'Austin'],
+                    datasets: [{
+                        data: [8, 6, 5, 3, 2],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(139, 92, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            '#667eea',
+                            '#f59e0b',
+                            '#10b981',
+                            '#ef4444',
+                            '#8b5cf6'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load user data
+        function loadUserData() {
+            // In a real app, this would fetch from API
+            const userData = {
+                name: 'John Doe',
+                totalApplications: 24,
+                interviewsScheduled: 3,
+                offersReceived: 1,
+                responseRate: 68
+            };
+
+            document.getElementById('userName').textContent = userData.name.split(' ')[0];
+            document.getElementById('totalApplications').textContent = userData.totalApplications;
+            document.getElementById('interviewsScheduled').textContent = userData.interviewsScheduled;
+            document.getElementById('offersReceived').textContent = userData.offersReceived;
+            document.getElementById('responseRate').textContent = userData.responseRate + '%';
+        }
+
+        // Navigation functions
+        function navigateToTab(tab) {
+            const pages = {
+                'job-search': 'job-search.html',
+                'resume-builder': 'resume-builder.html',
+                'intelligent-apps': 'intelligent-applications.html',
+                'applications': 'applications.html',
+                'profile': 'dashboard.html',
+                'settings': 'secure-email-setup.html'
+            };
+            
+            if (pages[tab]) {
+                window.location.href = pages[tab];
+            } else {
+                alert(`Navigating to ${tab} section...`);
+            }
+        }
+
+        function quickJobSearch() {
+            window.location.href = 'job-search.html';
+        }
+
+        function viewApplications() {
+            window.location.href = 'applications.html';
+        }
+
+        function viewInterviews() {
+            window.location.href = 'applications.html';
+        }
+
+        function viewOffers() {
+            window.location.href = 'applications.html';
+        }
+
+        function viewResponses() {
+            window.location.href = 'applications.html';
+        }
+
+        function viewJobDetails(jobId) {
+            alert(`Viewing details for job ${jobId}...`);
+        }
+
+        function openEmailSetup() {
+            window.open('secure-email-setup.html', '_blank');
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
